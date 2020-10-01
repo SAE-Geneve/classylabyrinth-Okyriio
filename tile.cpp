@@ -1,13 +1,12 @@
 #include <map>
 #include <cassert>
 #include "tile.h"
+#include <iostream>
 
-// An anonymous namespace just here so you cannot access there from somewhere
-// else.
 namespace {
 
 	// Map of the local space.
-	std::string local_world = 
+	std::string local_world =
 		"########################" // 24 * 8
 		"#.....E......E.....#..P#" // P is at (22, 1)
 		"#######..#####..####...#"
@@ -40,7 +39,7 @@ namespace {
 
 TileType get_tile_at_position(int x, int y)
 {
-	// Get the tile at the location x, y in the world.
+	//Done
 	return (TileType)local_world[xy_local(x, y)];
 }
 
@@ -51,13 +50,49 @@ void set_enemy(Enemy enemy, int x, int y)
 	enemy.y = y;
 	local_enemy[{x, y}] = enemy;
 }
+void erase_enemy(Enemy enemy, int x, int y)
+{
+	enemy.x = x;
+	enemy.y = y;
+	local_world[xy_local(x, y)] = '.';
+
+	//if (local_world.){
+	//	std::cout << "\nYou won the Maze";
+	//	return;
+	//}
+
+	bool isWin = true;
+	for (char cell : local_world)
+	{
+		if (cell == 'E')
+		{
+			isWin = false;
+		}
+	}
+
+	if (isWin == true)
+	{
+		std::cout << "\nYou won the Maze Hero\n" << "\nWrite q to quit Hero\n";
+	}
+}
 
 Enemy get_enemy(int x, int y)
 {
-	Enemy enemy = local_enemy[{x, y}];
-	// set the local position.
+	Enemy enemy;
 	enemy.x = x;
 	enemy.y = y;
+	if (local_enemy.find({ x,y }) == local_enemy.end())
+	{
+		local_enemy[{x, y}] = enemy;
+	}
+	else
+	{
+		return local_enemy[{x, y}];
+	}
+	// Get the local position in the world (if it exist).
+	// If an enemy is at the position.
+	// Then check if there is an enemy at this position?
+	// if not then create it and store it at the location.
 	// return the enemy at the position.
 	return enemy;
 }

@@ -1,25 +1,31 @@
 #include <vector>
 #include "command.h"
-
+#include <iostream>
 namespace {
 
-	void cross_attack(Player player, Enemy enemy) 
+	void cross_attack(Player player, Enemy enemy)
 	{
 		// Max is there to avoid giving health point in case too high defence.
 		player.health_points -= std::max(0, enemy.attack - player.defence);
 		enemy.health_points -= std::max(0, player.attack - enemy.defence);
 		set_player(player);
 		set_enemy(enemy, enemy.x, enemy.y);
+		if (enemy.health_points <= 0)
+		{
+			std::cout << "The enemy died by your hands Hero \n";
+			erase_enemy(enemy, enemy.x, enemy.y);
+		}
+		if (player.health_points <= 0)
+		{
+			std::cout << " You died loser\n";
+		}
 	}
-
 }
 
 void north()
 {
 	Player player = get_player();
-	// Get the location at north of the current player.
 	TileType tile_type = get_tile_at_position(player.x, player.y - 1);
-	// If the location is not empty do NOTHING!
 	if (tile_type != TileType::EMPTY)
 		return;
 	player.y -= 1;
@@ -29,37 +35,31 @@ void north()
 void south()
 {
 	Player player = get_player();
-	// Get the location at north of the current player.
 	TileType tile_type = get_tile_at_position(player.x, player.y + 1);
-	// If the location is not empty do NOTHING!
 	if (tile_type != TileType::EMPTY)
 		return;
 	player.y += 1;
-	set_player(player);
+	set_player(player);//Done
 }
 
 void east()
 {
 	Player player = get_player();
-	// Get the location at north of the current player.
 	TileType tile_type = get_tile_at_position(player.x + 1, player.y);
-	// If the location is not empty do NOTHING!
 	if (tile_type != TileType::EMPTY)
 		return;
 	player.x += 1;
-	set_player(player);
+	set_player(player);// Done
 }
 
 void west()
 {
 	Player player = get_player();
-	// Get the location at north of the current player.
 	TileType tile_type = get_tile_at_position(player.x - 1, player.y);
-	// If the location is not empty do NOTHING!
 	if (tile_type != TileType::EMPTY)
 		return;
 	player.x -= 1;
-	set_player(player);
+	set_player(player);//Done
 }
 
 void attack()
@@ -85,6 +85,10 @@ void tick()
 	// Life regen.
 	Player player = get_player();
 	player.health_points += player.health_regen;
-	player.health_points = 
+	player.health_points =
 		std::min(player.health_points, player.max_health_points);
+}
+void show_description(Enemy enemy)
+{
+	std::cout << "Health Points\n" << enemy.health_points << "\nAttack\n" << enemy.attack << "\n Defense\n" << enemy.defence;
 }

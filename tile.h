@@ -19,11 +19,12 @@ enum class CommandType
 	WEST,
 	ATTACK,
 	HELP,
+	//AGAIN,
 };
 
 TileType get_tile_at_position(int x, int y);
 
-struct Enemy 
+struct Enemy
 {
 	int x;
 	int y;
@@ -34,9 +35,10 @@ struct Enemy
 };
 
 void set_enemy(Enemy enemy, int x, int y);
+void erase_enemy(Enemy enemy, int x, int y);
 Enemy get_enemy(int x, int y);
 
-struct Player 
+struct Player
 {
 	int x = 22;
 	int y = 1;
