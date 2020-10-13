@@ -9,6 +9,10 @@ set(CMAKE_CXX_STANDARD 17)
 project(BasicLabyrinth)
 
 add_executable(BasicLabyrinth
+	${PROJECT_SOURCE_DIR}/Player.h
+	${PROJECT_SOURCE_DIR}/Enemy.h
+	${PROJECT_SOURCE_DIR}/character.cpp
+	${PROJECT_SOURCE_DIR}/character.h
 	${PROJECT_SOURCE_DIR}/command.cpp
 	${PROJECT_SOURCE_DIR}/command.h
 	${PROJECT_SOURCE_DIR}/tile.cpp

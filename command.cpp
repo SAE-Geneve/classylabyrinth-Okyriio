@@ -1,94 +1,139 @@
-#include <vector>
 #include "command.h"
+#include <vector>
 #include <iostream>
-namespace {
 
-	void cross_attack(Player player, Enemy enemy)
-	{
-		// Max is there to avoid giving health point in case too high defence.
-		player.health_points -= std::max(0, enemy.attack - player.defence);
-		enemy.health_points -= std::max(0, player.attack - enemy.defence);
-		set_player(player);
-		set_enemy(enemy, enemy.x, enemy.y);
-		if (enemy.health_points <= 0)
-		{
-			std::cout << "The enemy died by your hands Hero \n";
-			erase_enemy(enemy, enemy.x, enemy.y);
+
+Command::Command()
+{
+	world_ = World();
+}
+
+char Command::get_command()
+{
+	std::cout << "] ";
+	std::string command_str;
+	std::getline(std::cin, command_str);
+	return(command_str[0]);
+
+}
+void Command::ExCommand(){
+	
+	switch (get_command()){
+	case 'q':
+		std::cout << "Bye Hero!";
+		return;
+	case 'n':
+		north();
+		break;
+	case 's':
+		south();
+		break;
+	case 'e':
+		east();
+		break;
+	case 'w':
+		west();
+		break;
+	case 'a':
+		attack();
+		break;
+	case 'h':
+	default:
+		show_help();
+		break;
+	}
+}
+	
+void Command::show_state(){
+	Player player = world_.get_player();
+	std::cout << "Maze :\n" << "\nPlayer(X:" << player.x<< ", Y:" << player.y << ") :\n";
+	for (int i = player.y - 1; i < player.y + 2; i++) {
+		for (int j = player.x - 4; j < player.x + 2; j++) {
+			std::cout << (char)world_.get_tile_at_position(j, i);
 		}
-		if (player.health_points <= 0)
-		{
-			std::cout << " You died loser\n";
-		}
+		std::cout << std::endl;
 	}
 }
 
-void north()
+void Command::north()
 {
-	Player player = get_player();
-	TileType tile_type = get_tile_at_position(player.x, player.y - 1);
-	if (tile_type != TileType::EMPTY)
-		return;
+	Player player = world_.get_player();
+	if (world_.get_tile_at_position(player.x, player.y-1) != '.')
+	{
+
+		return; }
+
 	player.y -= 1;
-	set_player(player);
 }
 
-void south()
+void Command::south()
 {
-	Player player = get_player();
-	TileType tile_type = get_tile_at_position(player.x, player.y + 1);
-	if (tile_type != TileType::EMPTY)
-		return;
-	player.y += 1;
-	set_player(player);//Done
+
+	Player player = world_.get_player();
+	if (world_.get_tile_at_position(player.x, player.y + 1) != '.')
+	{
+
+		return; }
+
+	player.y -= 1;
 }
 
-void east()
+void Command::east()
 {
-	Player player = get_player();
-	TileType tile_type = get_tile_at_position(player.x + 1, player.y);
-	if (tile_type != TileType::EMPTY)
-		return;
-	player.x += 1;
-	set_player(player);// Done
+
+	Player player = world_.get_player();
+	if (world_.get_tile_at_position(player.x+1, player.y ) != '.')
+	{
+
+		return; }
+
+	player.y -= 1;
 }
 
-void west()
+void Command::west()
 {
-	Player player = get_player();
-	TileType tile_type = get_tile_at_position(player.x - 1, player.y);
-	if (tile_type != TileType::EMPTY)
-		return;
-	player.x -= 1;
-	set_player(player);//Done
-}
 
-void attack()
+	Player player = world_.get_player();
+	if (world_.get_tile_at_position(player.x-1, player.y ) != '.')
+	{
+
+		return; }
+
+	player.y -= 1;
+}
+void Command::attack()
 {
-	Player player = get_player();
+
+	Player player = world_.get_player();
 	std::vector<Enemy> enemy_vec;
 	// for now only attack enemy that are in strait line +.
-	if (TileType::ENEMY == get_tile_at_position(player.x, player.y - 1))
-		enemy_vec.push_back(get_enemy(player.x, player.y - 1));
-	if (TileType::ENEMY == get_tile_at_position(player.x, player.y + 1))
-		enemy_vec.push_back(get_enemy(player.x, player.y + 1));
-	if (TileType::ENEMY == get_tile_at_position(player.x - 1, player.y))
-		enemy_vec.push_back(get_enemy(player.x - 1, player.y));
-	if (TileType::ENEMY == get_tile_at_position(player.x + 1, player.y))
-		enemy_vec.push_back(get_enemy(player.x + 1, player.y));
-	for (const auto& enemy : enemy_vec)
-		cross_attack(player, enemy);
+	if (world_.get_tile_at_position(player.x, player.y - 1) == 'E')
+		enemy_vec.push_back(world_.get_enemy(player.x, player.y - 1));
+	if (world_. get_tile_at_position(player.x, player.y + 1)=='E')
+		enemy_vec.push_back(world_.get_enemy(player.x, player.y + 1));
+	if (world_.get_tile_at_position(player.x - 1, player.y) == 'E')
+		enemy_vec.push_back(world_.get_enemy(player.x - 1, player.y));
+	if (world_.get_tile_at_position(player.x + 1, player.y)=='E')
+		enemy_vec.push_back(world_.get_enemy(player.x + 1, player.y));
 }
-
-void tick()
+void Command::tick()
 {
 	// FIXME Suppose to have enemy moving soon(tm).
 	// Life regen.
-	Player player = get_player();
-	player.health_points += player.health_regen;
-	player.health_points =
-		std::min(player.health_points, player.max_health_points);
+	Player player = world_.get_player();
+	player.healthpoints += player.health_regen;
+	/*player.healthpoints =
+		std::min(player.healthpoints, player.max_health_points);*/
 }
-void show_description(Enemy enemy)
+
+void Command::show_help()
 {
-	std::cout << "Health Points\n" << enemy.health_points << "\nAttack\n" << enemy.attack << "\n Defense\n" << enemy.defence;
+	std::cout << "Valid options:\n";
+	std::cout << "\t[q]uit  -> quit the game.\n";
+	std::cout << "\t[n]orth -> move north.\n";
+	std::cout << "\t[s]outh - > move south.\n";
+	std::cout << "\t[e]ast -> move east.\n";
+	std::cout << "\t[w]est -> move west.\n";
+	std::cout << "\t[a]ttack\n";
+	std::cout << "\t[t]ick\n";//Done
 }
